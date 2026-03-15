@@ -20,15 +20,23 @@ $memory = "2048"
 $os = "Debian_64"
 $aantal_cpus = "2"
 $videogeheugen = "128"
+
+$ScriptDir = Split-Path -Parent $MyInvocation.MyCommand.Path
+$VDIFolder = Join-Path -Path $ScriptDir -ChildPath "VDI-folder"
+
 $naam_vdi = "kali-linux-2025.4-virtualbox-amd64.vdi"
 
-$pad_vdi = Join-Path "C:\Users\$naam\Downloads" $naam_vdi
+$pad_vdi = Join-Path -Path $VDIFolder -ChildPath $naam_vdi
+
+
+$base_folder = "C:\VirtualBox VMs"
 
 if ($naam -eq "ruben") {
     $base_folder = "H:\VirtualBox VMs"
-} else {
-    $base_folder = "C:\VirtualBox VMs"
-}
+}elseif ($IsLinux) {
+    $base_folder = "$($HOME)/VirtualBox VMs"
+} 
+
 
 $vm_folder = Join-Path $base_folder $vm_naam
 
