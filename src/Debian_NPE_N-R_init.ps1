@@ -1,5 +1,5 @@
 
-$naam = Read-Host "Geef uw user name op: "
+$naam = Read-Host "Geef uw user name op"
 
 #---------------------------
 # Variables
