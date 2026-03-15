@@ -4,7 +4,17 @@ $naam = Read-Host "Geef uw user name op (die van uw OS): "
 #------------------------------------
 # VARIABELEN
 #------------------------------------
-$VBoxManage = "C:\Program Files\Oracle\VirtualBox\VBoxManage.exe"
+
+if ( $IsLinux ){
+    $VBoxManage = "/usr/bin/vboxmanage"
+} elseif ( $IsWindows ) {
+    $VBoxManage = "C:\Program Files\Oracle\VirtualBox\VBoxManage.exe"
+} else{
+    Write-Host -ForegroundColor Red "Critical Error: Your Operating System is currently not supported!"
+    exit 1
+}
+
+
 $vm_naam = "NPE Ni_Ru-Kali Linux"
 $memory = "2048"
 $os = "Debian_64"
