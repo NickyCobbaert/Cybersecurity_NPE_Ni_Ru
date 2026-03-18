@@ -1,81 +1,133 @@
 # Naam van user opvragen
-$naam = Read-Host "Geef uw user name op (die van uw OS): "
+$naam = Read-Host "Geef uw user name op (die van uw OS)"
 
 #------------------------------------
 # VARIABELEN
 #------------------------------------
 
-if ( $IsLinux ){
+if ( $IsLinux ) {
     $VBoxManage = "/usr/bin/vboxmanage"
 } elseif ( $IsWindows ) {
     $VBoxManage = "C:\Program Files\Oracle\VirtualBox\VBoxManage.exe"
-} else{
+} else {
     Write-Host -ForegroundColor Red "Critical Error: Your Operating System is currently not supported!"
     exit 1
 }
 
-
-$vm_naam = "NPE Ni_Ru-Kali Linux"
+$VMName = "NPE Ni_Ru-Kali Linux"
 $memory = "2048"
 $os = "Debian_64"
-$aantal_cpus = "2"
-$videogeheugen = "128"
+$CPUs = "2"
+$VRAM = "128"
 
 $ScriptDir = Split-Path -Parent $MyInvocation.MyCommand.Path
 $VDIFolder = Join-Path -Path $ScriptDir -ChildPath "VDI-folder"
+$NAME_VDI = Get-ChildItem -Path "$VDIFolder" -Filter "*kali*.vdi" -Name
 
-$naam_vdi = "kali-linux-2025.4-virtualbox-amd64.vdi"
+$VDI_PATH = Join-Path -Path $VDIFolder -ChildPath "$NAME_VDI"
 
-$pad_vdi = Join-Path -Path $VDIFolder -ChildPath $naam_vdi
-
-
-$base_folder = "C:\VirtualBox VMs"
+$MAIN_VM_FOLDER = "C:\VirtualBox VMs"
 
 if ($naam -eq "ruben") {
-    $base_folder = "H:\VirtualBox VMs"
-}elseif ($IsLinux) {
-    $base_folder = "$($HOME)/VirtualBox VMs"
-} 
-
-
-$vm_folder = Join-Path $base_folder $vm_naam
-
-#------------------------------------
-# OPRUIMEN
-#------------------------------------
-& $VBoxManage closemedium disk "$pad_vdi" 2>$null
-& $VBoxManage internalcommands sethduuid "$pad_vdi" 2>$null
-
-$bestaandeVMs = & $VBoxManage list vms
-if ($bestaandeVMs | Select-String -Pattern "`"$vm_naam`"") {
-    & $VBoxManage controlvm $vm_naam poweroff 2>$null
-    & $VBoxManage unregistervm $vm_naam --delete
-    Start-Sleep -Seconds 2
+    $MAIN_VM_FOLDER = "H:\VirtualBox VMs"
+} elseif ($IsLinux) {
+    $MAIN_VM_FOLDER = "$($HOME)/VirtualBox VMs"
 }
 
-if (Test-Path $vm_folder) {
-    Remove-Item -Path $vm_folder -Recurse -Force
+$VM_FOLDER = Join-Path -Path "$MAIN_VM_FOLDER" -ChildPath "$VMName"
+
+
+function Cleanup {
+
+    #------------------------------------
+    # CLEANUP
+    #------------------------------------
+
+    do {
+        $CLEAN = Read-Host "Do you want to delete the VM and it's files? (y = yes, n = no)"
+    } while (($CLEAN -ne 'n' -and $CLEAN -ne 'y'))
+
+    if ( $CLEAN -eq 'y') {
+
+        & $VBoxManage closemedium disk "$VDI_PATH" 2>$null
+        & $VBoxManage internalcommands sethduuid "$VDI_PATH" 2>$null
+
+        $EXISTINGVMS = & $VBoxManage list vms
+        if ($EXISTINGVMS | Select-String -Pattern "`"$VMName`"") {
+            & $VBoxManage controlvm $VMName poweroff 2>$null
+            & $VBoxManage unregistervm $VMName --delete
+        }
+
+        if (Test-Path $VM_FOLDER) {
+            Remove-Item -Path $VM_FOLDER -Recurse -Force
+        }
+
+    }
+
 }
 
-#------------------------------------
-# VM AANMAKEN
-#------------------------------------
-& $VBoxManage createvm --name $vm_naam --ostype $os --register --basefolder $base_folder
+
+function Creation {
+
+    #------------------------------------
+    # VM AANMAKEN
+    #------------------------------------
+    & $VBoxManage createvm --name $VMName --ostype $os --register --basefolder $MAIN_VM_FOLDER
+
+    #------------------------------------
+    # HARDWARE CONFIGURATION
+    #------------------------------------
+    & $VBoxManage modifyvm $VMName --memory $memory --cpus $CPUs --vram $VRAM
+    & $VBoxManage modifyvm $VMName --natpf1 "guestssh,tcp,,2222,,22"
+
+    #------------------------------------
+    # STORAGE
+    #------------------------------------
+    # Eerst VDI loskoppelen uit registry en nieuw UUID geven om conflicten te vermijden
+    & $VBoxManage closemedium disk "$VDI_PATH" 2>$null
+    & $VBoxManage internalcommands sethduuid "$VDI_PATH"
+
+    & $VBoxManage storagectl $VMName --name "SATA" --add sata --controller IntelAhci
+    & $VBoxManage storageattach $VMName --storagectl "SATA" --port 0 --device 0 --type hdd --medium "$VDI_PATH"
+
+}
+
 
 #------------------------------------
-# BASISCONFIGURATIE
+# VM VALIDATION
 #------------------------------------
-& $VBoxManage modifyvm $vm_naam --memory $memory
-& $VBoxManage modifyvm $vm_naam --cpus $aantal_cpus
-& $VBoxManage modifyvm $vm_naam --vram $videogeheugen
 
-#------------------------------------
-# STORAGE
-#------------------------------------
-& $VBoxManage storagectl $vm_naam --name "SATA" --add sata --controller IntelAhci
-& $VBoxManage storageattach $vm_naam --storagectl "SATA" --port 0 --device 0 --type hdd --medium "$pad_vdi"
+if (& $VBoxManage list vms | Where-Object { $_ -match [regex]::Escape($VMName) }) {
+
+    Write-Host -BackgroundColor DarkCyan "Info: The VM does already exist!"
+
+    #------------------------------------
+    # CLEANUP
+    #------------------------------------
+
+    Cleanup
+
+    do {
+        $RECREATION = Read-Host "Do you want a new iteration of the VM? (y = yes ; n = no)"
+    } while (($RECREATION -ne 'n' -and $RECREATION -ne 'y'))
+
+    if ( $RECREATION -eq 'y' ) {
+        #------------------------------------
+        # CREATION
+        #------------------------------------
+        Creation
+    }
+
+} else {
+
+    #------------------------------------
+    # CREATION
+    #------------------------------------
+    Creation
+
+}
 
 #------------------------------------
 # STARTEN
 #------------------------------------
-& $VBoxManage startvm $vm_naam
+& $VBoxManage startvm $VMName
