@@ -1,3 +1,1 @@
-src/VDI-folder/Debian_12.0.0_VBG_LinuxVMImages.COM.vbox
-src/VDI-folder/Debian_12.0.0_VBG_LinuxVMImages.COM.vdi
-src/VDI-folder/kali-linux-2025.4-virtualbox-amd64.vdi
+src/VDI-folder/*.vdi
