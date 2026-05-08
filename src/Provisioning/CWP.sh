@@ -50,6 +50,10 @@ error() {
 
 log "Welcome to the CWP installer for CVE-2022-44877 on AlmaLinux 9!"
 
+log "Changing keyboard layout to Azerty"
+
+sudo loadkeys be
+
 log "updating the apt cache"
 sudo dnf update -yq
 
