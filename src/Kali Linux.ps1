@@ -37,34 +37,6 @@ if ($naam -eq "ruben") {
 $VM_FOLDER = Join-Path -Path "$MAIN_VM_FOLDER" -ChildPath "$VMName"
 
 
-function Cleanup {
-
-    #------------------------------------
-    # CLEANUP
-    #------------------------------------
-
-    do {
-        $CLEAN = Read-Host "Do you want to delete the VM and it's files? (y = yes, n = no)"
-    } while (($CLEAN -ne 'n' -and $CLEAN -ne 'y'))
-
-    if ( $CLEAN -eq 'y') {
-
-        & $VBoxManage closemedium disk "$VDI_PATH" 2>$null
-        & $VBoxManage internalcommands sethduuid "$VDI_PATH" 2>$null
-
-        $EXISTINGVMS = & $VBoxManage list vms
-        if ($EXISTINGVMS | Select-String -Pattern "`"$VMName`"") {
-            & $VBoxManage controlvm $VMName poweroff 2>$null
-            & $VBoxManage unregistervm $VMName --delete
-        }
-
-        if (Test-Path $VM_FOLDER) {
-            Remove-Item -Path $VM_FOLDER -Recurse -Force
-        }
-
-    }
-
-}
 
 
 function Creation {
@@ -101,11 +73,7 @@ if (& $VBoxManage list vms | Where-Object { $_ -match [regex]::Escape($VMName) }
 
     Write-Host -BackgroundColor DarkCyan "Info: The VM does already exist!"
 
-    #------------------------------------
-    # CLEANUP
-    #------------------------------------
 
-    Cleanup
 
     do {
         $RECREATION = Read-Host "Do you want a new iteration of the VM? (y = yes ; n = no)"
@@ -133,8 +101,3 @@ if (& $VBoxManage list vms | Where-Object { $_ -match [regex]::Escape($VMName) }
 & $VBoxManage startvm $VMName
 
 
-#------------------------------------
-# CLEANUP
-#------------------------------------
-
-Cleanup

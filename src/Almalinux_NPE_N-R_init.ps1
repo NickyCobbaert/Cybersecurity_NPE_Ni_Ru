@@ -38,35 +38,6 @@ $VM_FOLDER = Join-Path -Path "$MAIN_VM_FOLDER" -ChildPath "$VMName"
 $PROVISIONING_PATH = Join-Path -Path "$ScriptDir" -ChildPath "Provisioning"
 $PROVISIONING_FILE = Join-Path -Path "$PROVISIONING_PATH" -ChildPath "CWP.sh"
 
-function Cleanup{
-
-    #------------------------------------
-    # CLEANUP
-    #------------------------------------
-    
-    do{
-        $CLEAN = Read-Host "Do you want to delete the VM and it's files? (y = yes, n = no)"
-    }while ( ($CLEAN -ne 'n' -and $CLEAN -ne 'y'))
-    
-    if ( $CLEAN -eq 'y'){
-        
-        & $VBoxManage controlvm $VMName poweroff 2>$null
-        Start-Sleep -Seconds 3
-        
-        & $VBoxManage closemedium disk "$VDI_PATH" 2>$null
-        & $VBoxManage internalcommands sethduuid "$VDI_PATH" 2>$null
-        
-        $EXISTINGVMS = & $VBoxManage list vms
-        if ($EXISTINGVMS | Select-String -Pattern "`"$VMName`"") {
-            & $VBoxManage unregistervm $VMName --delete
-        }
-        
-        if (Test-Path $VM_FOLDER) {
-            Remove-Item -Path $VM_FOLDER -Recurse -Force
-        }
-    }
-}
-
 function Creation{
 
     #------------------------------------
@@ -97,12 +68,7 @@ if (& $VBoxManage list  vms | Where-Object { $_ -match [regex]::Escape($VMName) 
 
     Write-Host -BackgroundColor DarkCyan "Info: The VM does already exist!"
 
-    #------------------------------------
-    # CLEANUP
-    #------------------------------------
-    
-    Cleanup
-
+   
     do{
     $RECREATION = Read-Host "Do you want a new iteration of the VM? (y = yes ; n = no)"
     }while ( ($RECREATION -ne 'n' -and $RECREATION -ne 'y'))
@@ -135,9 +101,3 @@ if (-not (Test-Path $PROVISIONING_FILE)) {
 #read content (whole file, not lines (raw)) -> Change to Linux line endings -> ssh run bash ->  give everything to bash with ssh
 Get-Content "$PROVISIONING_FILE" -Raw | ForEach-Object { $_ -replace "`r`n", "`n" } | ssh almalinux@localhost -o StrictHostKeyChecking=no -p 2222 "bash"
 
-
-#------------------------------------
-# CLEANUP
-#------------------------------------
-
-Cleanup
