@@ -16,7 +16,7 @@ if ( $IsLinux ) {
 
 $VMName = "NPE Ni_Ru-Kali Linux"
 $memory = "4096"
-$os = "Debian_64"
+$os = "RedHat_64"
 $CPUs = "2"
 $VRAM = "128"
 
