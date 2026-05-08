@@ -1,4 +1,2 @@
 src/VDI-folder/*.vdi
-src/VDI-folder/AlmaLinux_9.0_VBM_LinuxVMImages.COM.vbox
-.gitignore
-src/VDI-folder/kali-linux-2026.1-virtualbox-amd64.vbox
+src/VDI-folder/*.vbox

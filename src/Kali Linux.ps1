@@ -16,7 +16,7 @@ if ( $IsLinux ) {
 
 $VMName = "NPE Ni_Ru-Kali Linux"
 $memory = "4096"
-$os = "RedHat_64"
+$os = "debian_64"
 $CPUs = "2"
 $VRAM = "128"
 
@@ -50,7 +50,7 @@ function Creation {
     # HARDWARE CONFIGURATION
     #------------------------------------
     & $VBoxManage modifyvm $VMName --memory $memory --cpus $CPUs --vram $VRAM
-    & $VBoxManage modifyvm $VMName --natpf1 "guestssh,tcp,,2222,,22"  --nic2 hostonly --hostonlyadapter2 "VirtualBox Host-Only Ethernet Adapter #2"
+    & $VBoxManage modifyvm $VMName --natpf1 "guestssh,tcp,,2200,,22"  --nic2 hostonly --hostonlyadapter2 "VirtualBox Host-Only Ethernet Adapter #2"
 
     #------------------------------------
     # STORAGE

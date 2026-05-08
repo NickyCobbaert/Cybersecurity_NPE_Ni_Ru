@@ -17,7 +17,7 @@ if ( $IsLinux ){
 
 $VMName = "NPE_Ni_Ru_CWP_AlmaLinux"
 $memory = "2048"
-$os = "Linux_64"
+$os = "RedHat_64"
 $CPUs = "2"
 $VRAM = "128"
 $ScriptDir = Split-Path -Parent $MyInvocation.MyCommand.Path
@@ -86,8 +86,10 @@ if (& $VBoxManage list  vms | Where-Object { $_ -match [regex]::Escape($VMName) 
 #------------------------------------
 
 & $VBoxManage startvm $VMName 2>$null
-Write-Host "VM gestart. Wachten tot SSH beschikbaar is (dit kan 20-40 seconden duren)..." -ForegroundColor Yellow
-Start-Sleep -Seconds 25
+Write-Host "VM gestart. Wacht tot SSH beschikbaar is!" -ForegroundColor Yellow
+Write-Host "Als de vm is opgestart, klik dan enter!"  -ForegroundColor Yellow
+
+Read-Host -Prompt "Press Enter to continue"
 
 #------------------------------------
 # PROVISION
