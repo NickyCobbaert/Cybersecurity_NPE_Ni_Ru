@@ -56,14 +56,14 @@ sudo su root
 
 log "Changing keyboard layout to Azerty"
 
-sudo loadkeys be
+loadkeys be
 
 log "Installing needed packages"
-sudo dnf install -y \
+dnf install -y \
   wget 
 
 log "Setting hostname..."
-sudo hostnamectl set-hostname cwp-vulnerable
+hostnamectl set-hostname cwp-vulnerable
 
 log "Installing CWP (EL9 version)..."
 cd /usr/local/src
@@ -71,6 +71,6 @@ wget http://centos-webpanel.com/cwp-el9-latest -O cwp-installer
 chmod +x cwp-installer
 
 log "Starting CWP installer (dit kan 10-20 minuten duren)..."
-sudo ./cwp-installer
+./cwp-installer
 
 log "CWP installation finished!"
