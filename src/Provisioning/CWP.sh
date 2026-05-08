@@ -50,12 +50,17 @@ error() {
 
 log "Welcome to the CWP installer for CVE-2022-44877 on AlmaLinux 9!"
 
+log "changing user to root"
+
+sudo su root
+
 log "Changing keyboard layout to Azerty"
 
 sudo loadkeys be
 
-log "updating the apt cache"
-sudo dnf update -yq
+log "Installing needed packages"
+sudo dnf install -y \
+  wget 
 
 log "Setting hostname..."
 sudo hostnamectl set-hostname cwp-vulnerable
