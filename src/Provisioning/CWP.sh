@@ -50,27 +50,28 @@ error() {
 
 log "Welcome to the CWP installer for CVE-2022-44877 on AlmaLinux 9!"
 
-log "changing user to root"
-
-sudo su root
-
 log "Changing keyboard layout to Azerty"
 
-loadkeys be
+sudo loadkeys be
 
 log "Installing needed packages"
-dnf install -y \
+
+sudo dnf install -y \
   wget 
 
 log "Setting hostname..."
-hostnamectl set-hostname cwp-vulnerable
+
+sudo hostnamectl set-hostname cwp-vulnerable
 
 log "Installing CWP (EL9 version)..."
+
 cd /usr/local/src
-wget http://centos-webpanel.com/cwp-el9-latest -O cwp-installer
-chmod +x cwp-installer
+
+sudo wget http://centos-webpanel.com/cwp-el9-latest -O cwp-installer
+sudo chmod +x cwp-installer
 
 log "Starting CWP installer (dit kan 10-20 minuten duren)..."
-./cwp-installer
+
+sudo ./cwp-installer
 
 log "CWP installation finished!"
