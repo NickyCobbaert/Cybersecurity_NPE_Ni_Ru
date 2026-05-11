@@ -67,6 +67,12 @@ username=almalinux
 
 password=almalinux
 
+### Aanpassen keyboard
+
+Het default keyboard is `QWERTY`. Indien u wenst kan u het keyboard aanpassen.
+
+Klik linksboven op het Kali logo. Typ dan `keyboard` in en klik enter. Klik op `LayOut` en disable `Use system defaults`. Dan klikt u linksonder op de `+Add`. Zoek naar `Belgian` en klik op `Ok`. Vervolgens klikt u op `English` en klik op `-Remove`.
+
 # Hoe CVE-2022-44877 uitvoeren
 
 ## Open listener op Kali
