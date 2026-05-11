@@ -15,14 +15,14 @@ if ( $IsLinux ){
 }
 
 
-$VMName = "NPE_Ni_Ru_CWP_AlmaLinux"
+$VMName = "NPE_Ni_Ru_CWP_Rocky_8"
 $memory = "2048"
 $os = "RedHat_64"
 $CPUs = "2"
 $VRAM = "128"
 $ScriptDir = Split-Path -Parent $MyInvocation.MyCommand.Path
 $VDIFolder = Join-Path -Path $ScriptDir -ChildPath "VDI-folder"
-$NAME_VDI = Get-ChildItem -Path "$VDIFolder" -Filter "*AlmaLinux*.vdi" -name
+$NAME_VDI = Get-ChildItem -Path "$VDIFolder" -Filter "*Rocky*.vdi" -name
 
 $VDI_PATH = Join-Path -Path $VDIFolder -ChildPath "$NAME_VDI"
 $MAIN_VM_FOLDER = "C:\VirtualBox VMs"
@@ -101,5 +101,5 @@ if (-not (Test-Path $PROVISIONING_FILE)) {
 }
 #provision file:
 #read content (whole file, not lines (raw)) -> Change to Linux line endings -> ssh run bash ->  give everything to bash with ssh
-Get-Content "$PROVISIONING_FILE" -Raw | ForEach-Object { $_ -replace "`r`n", "`n" } | ssh almalinux@localhost -o StrictHostKeyChecking=no -p 2222 "bash"
+Get-Content "$PROVISIONING_FILE" -Raw | ForEach-Object { $_ -replace "`r`n", "`n" } | ssh rockylinux@localhost -o StrictHostKeyChecking=no -p 2222 "bash"
 
