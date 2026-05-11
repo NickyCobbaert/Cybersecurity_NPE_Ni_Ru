@@ -67,7 +67,7 @@ log "Installing CWP (EL9 version)..."
 
 cd /usr/local/src
 
-sudo wget http://centos-webpanel.com/cwp-el9-latest -O cwp-installer
+sudo wget http://static.cdn-cwp.com/files/cwp/el7/cwp-el7-0.9.8.1146.zip -O cwp-installer
 sudo chmod +x cwp-installer
 
 log "Starting CWP installer (dit kan 10-20 minuten duren)..."
