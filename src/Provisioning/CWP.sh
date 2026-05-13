@@ -48,7 +48,7 @@ error() {
 # SETUP
 #------------------------------------------------------------------------------
 
-log "Welcome to the CWP installer for CVE-2022-44877 on Rocky 8!"
+log "Welcome to the CWP Exploit Simulator for CVE-2022-44877 on Rocky 8!"
 
 log "Changing keyboard layout to Azerty"
 
@@ -62,72 +62,96 @@ log "Installing needed packages"
 
 sudo dnf install -y \
   wget \
-  unzip
+  unzip \
+  lighttpd\
+  php\
+  php-cgi\
+  php-fpm
 
-log "disabling selinux" 
+
+log "Enabling lighthttpd port"
+
+firewall-cmd --permanent --add-service=http
+firewall-cmd --reload
+
+log "Disabling selinux" 
 
 sudo setenforce 0
 sudo sed -i 's/SELINUX=enforcing/SELINUX=permissive/g' /etc/selinux/config
 
-
-log "Setting hostname..."
+log "Setting hostname to cwp-vulnerable"
 
 sudo hostnamectl set-hostname cwp-vulnerable
 
-log "Installing CWP (CentOS 8 version)..."
+log "Configuring PHP-FPM to listen on TCP 9000"
+# Rocky 8 defaults to a unix socket. So we switch it to TCP so Lighttpd can connect on port 9000.
+sed -i 's|^listen = .*|listen = 127.0.0.1:9000|' /etc/php-fpm.d/www.conf
 
-cd /usr/local/src
+log "Configuring Lighttpd to run PHP"
 
-log "Downloading the installation script for cwp" 
+mkdir -p /etc/lighttpd/conf.d
+cat << _EOF_ > /etc/lighttpd/conf.d/php.conf
+server.modules += ( "mod_fastcgi" )
+fastcgi.server += ( ".php" =>
+  ((
+    "host" => "127.0.0.1",
+    "port" => "9000",
+    "broken-scriptfilename" => "enable"
+  ))
+)
+_EOF_
 
-sudo wget http://centos-webpanel.com/cwp-el8-latest -O cwp-el8-latest
+if grep -qxF 'include "conf.d/php.conf"' /etc/lighttpd/lighttpd.conf  
+  then 
+    true
+    # nothing because conf.d/php.conf is already included in /etc/lighttpd/lighttpd.conf
+  else
+    echo 'include "conf.d/php.conf"' >> /etc/lighttpd/lighttpd.conf
+fi
 
-log "Downloading an exploitable version of cwp"
+log "Lighthttpd will now bind to IPv4"
+echo 'server.bind = "0.0.0.0"' >> /etc/lighttpd/lighttpd.conf
 
-sudo wget http://static.cdn-cwp.com/files/cwp/el7/cwp-el7-0.9.8.1146.zip -O cwp-1146.zip
+log "Creating the vulnerable CWP-style endpoint"
 
-sudo unzip -o -q cwp-1146.zip
-sudo rm -f cwp-1146.zip
-
-# starting installer
-log "Starting CWP installer (dit kan 10-20 minuten duren)..."
-
-sudo sh ./cwp-el8-latest
-
-
-log "Changing the installation script to use the older exploitable files"
-
-# Replace the vulnerable files (this is what makes it exploitable)
-sudo cp -rf cwp-el7-0.9.8.1146/public_html/* /usr/local/cwpsrv/htdocs/resources/admin/ 
-sudo cp -rf cwp-el7-0.9.8.1146/public_html/* /usr/local/cwpsrv/htdocs/resources/client/
-
-# Fix permissions
-sudo chown -R cwpsrv:cwpsrv /usr/local/cwpsrv/htdocs/resources/admin
-sudo chown -R cwpsrv:cwpsrv /usr/local/cwpsrv/htdocs/resources/client
-
-log "Blocking all updates for CWP"
-
-sed -i '/update.centos-webpanel.com/d' /etc/hosts 
-sed -i '/static.cdn-cwp.com/d' /etc/hosts 
-sed -i '/dl1.centos-webpanel.com/d' /etc/hosts 
-
-cat >> /etc/hosts << EOF
-
-# === BLOCK CWP AUTO UPDATES ===
-0.0.0.0 update.centos-webpanel.com
-0.0.0.0 static.cdn-cwp.com
-0.0.0.0 dl1.centos-webpanel.com
-0.0.0.0 dl2.centos-webpanel.com
-0.0.0.0 centos-webpanel.com
+# Here we recreate the logic flaw that made CVE-2022-44877 possible.
+mkdir -p /var/www/lighttpd/login
+cat << 'EOF' > /var/www/lighttpd/login/index.php
+<?php
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $username = $_POST['login'];
+    
+    // Because double quotes are used around the parameter, an attacker can use
+    // command substitution, e.g., $(whoami) or `id`
+    $log_command = "echo \"Failed login attempt for user: " . $username . "\" >> /tmp/cwp_failed_log.txt";
+    
+    // Execute the command (this is where the RCE happens)
+    system($log_command);
+    
+    echo "Login failed. Incorrect credentials.";
+} else {
+    echo "<h1>CWP Control Panel (Simulated)</h1>";
+    echo "<form method='POST'>";
+    echo "Username: <input type='text' name='login'><br>";
+    echo "Password: <input type='password' name='password'><br>";
+    echo "<input type='submit' value='Login'>";
+    echo "</form>";
+}
+?>
 EOF
 
-# Restart services
-log "Restart services"
+log "Changing permissions for Lighthttpd"
+chown -R lighttpd:lighttpd /var/www/lighttpd/
+chmod -R 755 /var/www/lighttpd/
 
-sudo systemctl restart cwpsrv
-sudo systemctl restart httpd
+log "Starting the webserver"
 
-log "CWP installation finished!"
+systemctl start php-fpm
+systemctl enable php-fpm
+systemctl restart lighttpd
+systemctl enable lighttpd
+
+log "CWP Simulator installation finished!"
 
 log "Please reboot the VM"
 exit 0
