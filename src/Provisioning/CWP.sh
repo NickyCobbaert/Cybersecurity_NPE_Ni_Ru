@@ -66,13 +66,20 @@ sudo dnf install -y \
   lighttpd\
   php\
   php-cgi\
-  php-fpm
+  php-fpm \
+  lighttpd-fastcgi
 
+log "Restarting enp0s8 driver"
+
+sudo nmcli device disconnect enp0s8 
+sudo nmcli device connect enp0s8 
+
+IP_enp0s8="$(ip -br -4 a show enp0s8 | awk '{print $3}' | cut -d/ -f1)"
 
 log "Enabling lighthttpd port"
 
-firewall-cmd --permanent --add-service=http
-firewall-cmd --reload
+sudo firewall-cmd --permanent --add-service=http
+sudo firewall-cmd --reload
 
 log "Disabling selinux" 
 
@@ -85,12 +92,12 @@ sudo hostnamectl set-hostname cwp-vulnerable
 
 log "Configuring PHP-FPM to listen on TCP 9000"
 # Rocky 8 defaults to a unix socket. So we switch it to TCP so Lighttpd can connect on port 9000.
-sed -i 's|^listen = .*|listen = 127.0.0.1:9000|' /etc/php-fpm.d/www.conf
+sudo sed -i 's|^listen = .*|listen = 127.0.0.1:9000|' /etc/php-fpm.d/www.conf
 
 log "Configuring Lighttpd to run PHP"
 
-mkdir -p /etc/lighttpd/conf.d
-cat << _EOF_ > /etc/lighttpd/conf.d/php.conf
+sudo mkdir -p /etc/lighttpd/conf.d
+cat << _EOF_ | sudo tee /etc/lighttpd/conf.d/php.conf
 server.modules += ( "mod_fastcgi" )
 fastcgi.server += ( ".php" =>
   ((
@@ -106,17 +113,22 @@ if grep -qxF 'include "conf.d/php.conf"' /etc/lighttpd/lighttpd.conf
     true
     # nothing because conf.d/php.conf is already included in /etc/lighttpd/lighttpd.conf
   else
-    echo 'include "conf.d/php.conf"' >> /etc/lighttpd/lighttpd.conf
+    echo 'include "conf.d/php.conf"' | sudo tee -a /etc/lighttpd/lighttpd.conf
 fi
 
 log "Lighthttpd will now bind to IPv4"
-echo 'server.bind = "0.0.0.0"' >> /etc/lighttpd/lighttpd.conf
+
+# removing duplicate ip's server.bind = "0.0.0.0"/d
+sudo sed -i '/server.bind = "0.0.0.0"/d' /etc/lighttpd/lighttpd.conf
+
+# adding 1 bind for Lighthttpd with ip 0.0.0.0
+echo 'server.bind = "0.0.0.0"' | sudo tee -a /etc/lighttpd/lighttpd.conf
 
 log "Creating the vulnerable CWP-style endpoint"
 
 # Here we recreate the logic flaw that made CVE-2022-44877 possible.
-mkdir -p /var/www/lighttpd/login
-cat << 'EOF' > /var/www/lighttpd/login/index.php
+sudo mkdir -p /var/www/lighttpd/login
+cat << 'EOF' | sudo tee /var/www/lighttpd/login/index.php &> /dev/null
 <?php
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $username = $_POST['login'];
@@ -141,17 +153,24 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 EOF
 
 log "Changing permissions for Lighthttpd"
-chown -R lighttpd:lighttpd /var/www/lighttpd/
-chmod -R 755 /var/www/lighttpd/
+sudo chown -R lighttpd:lighttpd /var/www/lighttpd/
+sudo sudo chmod -R 755 /var/www/lighttpd/
 
 log "Starting the webserver"
 
-systemctl start php-fpm
-systemctl enable php-fpm
-systemctl restart lighttpd
-systemctl enable lighttpd
+sudo systemctl start php-fpm
+sudo systemctl enable php-fpm
+sudo systemctl restart lighttpd
+sudo systemctl enable lighttpd
 
-log "CWP Simulator installation finished!"
+log "CVE-2022-44877 Simulator installation finished! ------------------------"
 
-log "Please reboot the VM"
+
+echo ""
+log "To exploit the virtual machine, please use following curl command:"
+log "curl -v -X POST -d 'login=admin\" ; echo "You have been hacked!!!" ; echo \"' http://$IP_enp0s8/login/index.php"
+echo ""
+echo ""
+log "Thanks for using the CVE-2022-44877 Simulator installation script"
+
 exit 0
