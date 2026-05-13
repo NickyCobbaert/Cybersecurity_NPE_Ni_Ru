@@ -12,7 +12,7 @@ Klik op deze [link](https://cdimage.kali.org/kali-2026.1/kali-linux-2026.1-virtu
 
 ### VDI Rokcy 8
 
-Klik op deze [link](https://techloudgeek.com/download/image/?link=https://dlconusc1.linuxvmimages.com/046389e06777452db2ccf9a32efa3760:dldatac/VirtualBox/R/rockylinux/8/RockyLinux_8.5_VBG.7z) en er zal een 7Zip bestand worden gedownload. Als het is gedownload, dan moet u juist upzippen. Hierna ga je in de geünzipte folder gaan en dan het .VDI bestand verplaatsen naar [onze VDI folder](../src/VDI-folder/) in onze repo.
+Klik op deze [link](https://techloudgeek.com/download/image/?link=https://dlconusc1.linuxvmimages.com/046389e06777452db2ccf9a32efa3760:dldatac/VirtualBox/R/rockylinux/8/RockyLinux_8.5_VBM.7z) en er zal een 7Zip bestand worden gedownload. Als het is gedownload, dan moet u juist upzippen. Hierna ga je in de geünzipte folder gaan en dan het .VDI bestand verplaatsen naar [onze VDI folder](../src/VDI-folder/) in onze repo.
 
 ### Configuratie host-only adapter
 
