@@ -1,6 +1,3 @@
-# Naam van user opvragen
-$naam = Read-Host "Geef uw user name op (die van uw OS)"
-
 #------------------------------------
 # VARIABELEN
 #------------------------------------
@@ -28,9 +25,7 @@ $VDI_PATH = Join-Path -Path $VDIFolder -ChildPath "$NAME_VDI"
 
 $MAIN_VM_FOLDER = "C:\VirtualBox VMs"
 
-if ($naam -eq "ruben") {
-    $MAIN_VM_FOLDER = "H:\VirtualBox VMs"
-} elseif ($IsLinux) {
+if ($IsLinux) {
     $MAIN_VM_FOLDER = "$($HOME)/VirtualBox VMs"
 }
 
