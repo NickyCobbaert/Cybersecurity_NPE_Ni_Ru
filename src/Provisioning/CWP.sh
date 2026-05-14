@@ -71,8 +71,8 @@ sudo dnf install -y \
 
 log "Restarting enp0s8 driver"
 
-sudo nmcli device disconnect enp0s8 
-sudo nmcli device connect enp0s8 
+sudo nmcli device disconnect enp0s8 || error "Device enp0s8 could not be disabled"
+sudo nmcli device connect enp0s8 || error "Device enp0s8 could not be enabled"
 
 IP_enp0s8="$(ip -br -4 a show enp0s8 | awk '{print $3}' | cut -d/ -f1)"
 
