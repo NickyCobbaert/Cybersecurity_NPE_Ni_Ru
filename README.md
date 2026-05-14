@@ -53,9 +53,9 @@ Voer volgend commando uit in jouw PowerShell scherm:
 
 #### Credentials
 
-username=kali
+**username**=kali
 
-password=kali
+**password**=kali
 
 ### Opzet Rocky
 
