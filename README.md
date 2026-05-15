@@ -32,15 +32,10 @@ We hebben een host-only adapter nodig voor onze opstelling. Om deze toe te voege
 
 Open een PowerShell venster waar je onze [GitHub repo](https://github.com/NickyCobbaert/Cybersecurity_NPE_Ni_Ru) hebt opgeslagen. Dan moet je naar onze [src-folder](./src/). Dit doe je in PowerShell met volgend commando `cd .\src\`. Nu zit u in onze folder van al onze scripts. Vanaf hier is het erg eenvoudig om alle scripts uit te voeren.
 
-Voor je de commando's uitvoert, zorg ervoor dat je PowerShell versie **7** op je computer hebt staan. Je kan gewoon je terminal openen zoals hierboven is beschreven, maar dan moet u enkel nog volgend commando uitvoeren `pwsh`. Dan zou je normaal volgend scherm moeten te zien krijgen.
+Om zeker te zijn dat uw versie van PowerShell correct is, voert u eerst volgend commando uit. Dat commando zorgt ervoor dat u PowerShell laat updaten naar de laatste versie.
 
-```PowerShell
-PS C:\Cybersecurity_NPE_Ni_Ru\src> pwsh
-PowerShell 7.5.5
-
-   A new PowerShell stable release is available: v7.6.1
-   Upgrade now, or check out the release page at:
-     https://aka.ms/PowerShell-Release?tag=v7.6.1
+```bash
+winget update powershell
 ```
 
 ### Opzet Kali
@@ -65,7 +60,11 @@ Klik linksboven op het Kali logo. Typ dan `keyboard` in en klik enter. Klik op `
 
 ### Opzet Rocky
 
-Voordat je het script uitvoert, kijk eerst eens in uw `known hosts`. Als daar nog een regel staat met `127.0.0.1` of `localhost`, dan moet je deze verwijderen.
+Voordat je het script uitvoert, kijk eerst eens in uw `known_hosts`. Als daar nog een regel staat met `127.0.0.1` of `localhost`, dan moet je deze verwijderen. known_hosts, bevindt zich onder het mapje `users`, dubbelklik op uw gebruiker, daarna zoekt u naar `.ssh` en dan zou u het bestand `known_hosts` moeten zien. Een voorbeeldje van een mogelijk pad vindt u hieronder.
+
+```bash
+C:\Users\ruben\.ssh\known_hosts
+```
 
 Voer volgend commando uit in jouw PowerShell scherm:
 
